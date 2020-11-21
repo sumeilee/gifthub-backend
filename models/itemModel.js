@@ -2,10 +2,6 @@ const mongoose = require("mongoose");
 
 const itemSchema = new mongoose.Schema({
     // var name below TBC
-    postID: {
-        type: Number,
-        required: true,
-    },
     postType: {
         type: String,
         enum: ["request", "offer"],
