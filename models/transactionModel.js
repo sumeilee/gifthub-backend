@@ -11,7 +11,7 @@ const transactionSchema = new mongoose.Schema({
         ref: "User",
         required: true,
     },
-    title: {
+    item: {
         type: mongoose.Schema.ObjectId,
         ref: "Item",
         required: true,
