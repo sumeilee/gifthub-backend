@@ -3,7 +3,7 @@ const itemModel = require("../models/itemModel");
 const controllers = {
     createItem: (req, res) => {
         itemModel.create({
-            name: req.body.name,
+            title: req.body.title,
             postType: req.body.type,
             title: req.body.title,
             description: req.body.description,
@@ -12,6 +12,7 @@ const controllers = {
             delivery: req.body.delivery,
             status: req.body.status,
             tags: req.body.tags,
+            postedBy: req.body.postedBy, //to review in frontend
         });
     },
 };
