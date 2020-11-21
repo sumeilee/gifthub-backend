@@ -5,7 +5,6 @@ const controllers = {
         itemModel.create({
             title: req.body.title,
             postType: req.body.type,
-            title: req.body.title,
             description: req.body.description,
             category: req.body.category,
             images: req.body.images,
