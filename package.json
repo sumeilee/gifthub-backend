@@ -1,27 +1,28 @@
 {
-  "name": "gifthub-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "mongoose": "^5.10.15"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sumeilee/gifthub-backend.git"
-  },
-  "bugs": {
-    "url": "https://github.com/sumeilee/gifthub-backend/issues"
-  },
-  "homepage": "https://github.com/sumeilee/gifthub-backend#readme"
+    "name": "gifthub-backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js",
+        "seedItem": "node scripts/seedItem.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "mongoose": "^5.10.15"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sumeilee/gifthub-backend.git"
+    },
+    "bugs": {
+        "url": "https://github.com/sumeilee/gifthub-backend/issues"
+    },
+    "homepage": "https://github.com/sumeilee/gifthub-backend#readme"
 }
