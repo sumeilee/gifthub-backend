@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
     "name": "gifthub-backend",
     "version": "1.0.0",
     "description": "",
@@ -13,40 +12,13 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "bcrypt": "^5.0.0",
         "cors": "^2.8.5",
+        "crypto-js": "^4.0.0",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
-        "mongoose": "^5.10.15"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/sumeilee/gifthub-backend.git"
-    },
-    "bugs": {
-        "url": "https://github.com/sumeilee/gifthub-backend/issues"
-    },
-    "homepage": "https://github.com/sumeilee/gifthub-backend#readme"
-=======
-  "name": "gifthub-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "server.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "bcrypt": "^5.0.0",
-    "cors": "^2.8.5",
-    "crypto-js": "^4.0.0",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.10.15",
-    "uuid": "^8.3.1"
-  }
->>>>>>> d318838090ea6db33388b2b27b4124d78b982da8
+        "jsonwebtoken": "^8.5.1",
+        "mongoose": "^5.10.15",
+        "uuid": "^8.3.1"
+    }
 }
