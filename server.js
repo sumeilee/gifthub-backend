@@ -15,12 +15,17 @@ const { DB_USER, DB_PASS, DB_HOST, DB_NAME } = process.env;
 const mongoURI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`;
 mongoose.set("useFindAndModify", false);
 
+const conversationController = require("./controllers/conversationController");
+
 app.get("/api/v1", (req, res) => {
   res.status(200).json({
     success: true,
     message: "gifthub api reached",
   });
 });
+
+app.get("/api/v1/conversations", conversationController.getConversation);
+app.post("/api/v1/conversations", conversationController.createConversation);
 
 mongoose
   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
