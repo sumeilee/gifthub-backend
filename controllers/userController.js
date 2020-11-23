@@ -126,8 +126,6 @@ const userController = {
       });
   },
 
-  userLogout(req, res) {},
-
   userProfile(req, res) {
     userModel
       .findOne({_id: req.params.id})
