@@ -30,13 +30,13 @@ app.get("/api/v1", (req, res) => {
 // app.get("/items/:id", itemController.getItem);
 
 // create route
-app.post("/items", itemController.createItem);
+app.post("/api/v1/items", itemController.createItem);
 
 // update route
-app.patch("/items/:id", itemController.updateItem);
+app.patch("/api/v1//items/:id", itemController.updateItem);
 
 // delete route
-app.delete("/items/:id", itemController.deleteItem);
+app.delete("/api/v1//items/:id", itemController.deleteItem);
 
 mongoose
     .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
