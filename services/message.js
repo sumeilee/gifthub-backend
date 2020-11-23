@@ -29,6 +29,24 @@ const messageService = {
       .find({ conversation: id })
       .sort({ postedAt: sortOrder });
   },
+
+  updateMessage: async (id, message, attachments) => {
+    const doc = await messageModel.findOne({ _id: id });
+
+    if (!doc) {
+      throw Error("Message not found");
+    } else {
+      doc.message = message;
+      doc.attachments = attachments;
+      doc.updatedAt = Date.now();
+
+      return doc.save();
+    }
+  },
+
+  deleteMessage: (id) => {
+    return messageModel.deleteOne({ _id: id });
+  },
 };
 
 module.exports = messageService;

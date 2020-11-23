@@ -5,14 +5,14 @@ const messageController = {
     const { author, message, attachments, conversation } = req.body;
 
     try {
-      const response = await services.createMessage(
+      const doc = await services.createMessage(
         conversation,
         author,
         message,
         attachments
       );
 
-      if (response) {
+      if (doc) {
         res.status(201).json({
           success: true,
           message: response,
@@ -48,6 +48,50 @@ const messageController = {
       res.status(500).json({
         success: false,
         message: err.message,
+      });
+    }
+  },
+
+  updateMessage: async (req, res) => {
+    const { id } = req.params;
+    const { message, attachments } = req.body;
+
+    try {
+      const doc = await services.updateMessage(id, message, attachments);
+
+      res.status(200).json({
+        success: true,
+        message: doc,
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  },
+
+  deleteMessage: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const response = await services.deleteMessage(id);
+
+      if (response.n === 0) {
+        res.status(401).json({
+          success: false,
+          message: "Message not found",
+        });
+      } else {
+        res.status(200).json({
+          success: true,
+          message: "Message deleted",
+        });
+      }
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Error deleting message",
       });
     }
   },
