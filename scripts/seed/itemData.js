@@ -19,7 +19,7 @@ const items = [
         delivery: "Included",
         status: "Open",
         tags: "washing machine, appliances",
-        postedBy: "5fb8b003e1e86a126a37520d",
+        postedBy: "5fb8d9e0af77ce1b35be26d5",
     },
 
     {
@@ -31,7 +31,7 @@ const items = [
         delivery: "Included",
         status: "Open",
         tags: "mattresses, furniture",
-        postedBy: "5fb8b003e1e86a126a37520d",
+        postedBy: "5fb8d9e0af77ce1b35be26d5",
     },
     {
         title: "Kids table with 2 chairs",
@@ -42,6 +42,17 @@ const items = [
         delivery: "Included",
         status: "Open",
         tags: "kids table, furniture",
+        postedBy: "5fb8b003e1e86a126a37520d",
+    },
+    {
+        title: "Friso Milk Powder",
+        postType: "Request",
+        description:
+            "Family has 4 young children with the youngest being only about 9 months. Family is facing financial difficulties as wife is unable to work currently due to her health and husband is looking after wife and their children. Family requires assistance in buying milk powder for their 9 months baby. Baby is drinking milk powder Friso (6-12 months)",
+        category: "Infant and Children Supplies",
+        delivery: "Included",
+        status: "Open",
+        tags: "milk power, infant",
         postedBy: "5fb8b003e1e86a126a37520d",
     },
 ];

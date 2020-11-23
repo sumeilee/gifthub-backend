@@ -1,7 +1,7 @@
 const { deleteModel } = require("mongoose");
 const itemModel = require("../models/itemModel");
 
-const controllers = {
+const itemControllers = {
     createItem: (req, res) => {
         console.log(req.body);
         itemModel
@@ -53,26 +53,26 @@ const controllers = {
                     return;
                 }
 
-                // tidy code later
-                const itemUpdates = {
-                    title: req.body.title,
-                    postType: req.body.type,
-                    description: req.body.description,
-                    category: req.body.category,
-                    images: req.body.images,
-                    delivery: req.body.delivery,
-                    status: req.body.status,
-                    tags: req.body.tags,
-                    postedBy: req.body.postedBy, //to review in frontend
-                };
+                // check if any input fields were left blank
+                const itemUpdates = {};
+                const formValues = req.body;
+                let updateNum = 0;
 
-                for (const prop in itemUpdates) {
-                    if (!itemUpdates[prop]) {
-                        delete itemUpdates[prop];
-                        console.log(prop + " deleted");
+                for (const prop in formValues) {
+                    if (formValues[prop]) {
+                        itemUpdates[prop] = formValues[prop];
+                        updateNum += 1;
                     }
                 }
-                console.log(itemUpdates);
+
+                if (updateNum === 0) {
+                    res.statusCode = 404; // to check
+                    res.json({
+                        success: false,
+                        message: "No fields were updated. Please try again.",
+                    });
+                    return;
+                }
 
                 itemModel
                     .findOneAndUpdate(
@@ -80,20 +80,15 @@ const controllers = {
                             _id: req.params.id,
                         },
                         {
-                            // improve code later:ternary operator?
                             $set: itemUpdates,
-                        }
+                        },
+                        // check against schema enum values
+                        { runValidators: true }
                     )
                     .then((result) => {
-                        // console.log(req.body);
+                        console.log(req.body);
                         console.log(result);
 
-                        // validate data later
-                        // try {
-                        //     // try to execute potentially problematic code
-                        // } catch (err) {
-                        //     // code for resolving error from above
-                        // }
                         res.json({
                             success: true,
                             message: "item successfully updated",
@@ -167,4 +162,4 @@ const controllers = {
     },
 };
 
-module.exports = controllers;
+module.exports = itemControllers;
