@@ -6,12 +6,7 @@ const messageSchema = new mongoose.Schema({
     ref: "Conversation",
     required: true,
   },
-  from: {
-    type: mongoose.Schema.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  to: {
+  author: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
     required: true,
@@ -23,7 +18,10 @@ const messageSchema = new mongoose.Schema({
   postedAt: {
     type: Date,
     default: Date.now,
-    required: true,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
   },
   attachments: [String],
   viewed: {

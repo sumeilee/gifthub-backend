@@ -2,7 +2,8 @@ const services = require("../services/conversation");
 
 const conversationControllers = {
   createConversation: async (req, res) => {
-    const { participants, item } = req.body;
+    const { participantsStr, item } = req.body;
+    const participants = participantsStr.split(",");
 
     try {
       const conversation = await services.createConversation(

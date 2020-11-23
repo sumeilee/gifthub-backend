@@ -16,6 +16,7 @@ const mongoURI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`;
 mongoose.set("useFindAndModify", false);
 
 const conversationController = require("./controllers/conversationController");
+const messageController = require("./controllers/messageController");
 
 app.get("/api/v1", (req, res) => {
   res.status(200).json({
@@ -26,6 +27,9 @@ app.get("/api/v1", (req, res) => {
 
 app.get("/api/v1/conversations", conversationController.getConversation);
 app.post("/api/v1/conversations", conversationController.createConversation);
+
+app.get("/api/v1/messages", messageController.getMessages);
+app.post("/api/v1/messages", messageController.createMessage);
 
 mongoose
   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
