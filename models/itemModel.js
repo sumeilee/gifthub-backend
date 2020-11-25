@@ -4,7 +4,7 @@ const itemSchema = new mongoose.Schema({
     // var name below TBC
     postType: {
         type: String,
-        enum: ["request", "offer"],
+        enum: ["Request", "Offer"],
         required: true,
     },
     title: {
@@ -18,6 +18,7 @@ const itemSchema = new mongoose.Schema({
     },
     category: {
         type: String,
+        // enum: ["Furniture", "Appliances", "Infant and Children Supplies"], // add more later
         required: true,
     },
     images: [String],
@@ -28,23 +29,28 @@ const itemSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Open", "Pending Fulfilment", "Fulfilled"],
+        enum: ["Open", "Pending", "Fulfilled"],
         required: true,
     },
     tags: [String],
     postedBy: {
+        //comment out for Postman test
         type: mongoose.Schema.ObjectId,
         ref: "User",
+        required: true,
+        // // for Postman test only
+        // type: String,
+        // required: true,
     },
     createdAt: {
         type: Date,
         required: true,
-        default: Date.now,
+        default: Date.now, // check time later
     },
     updatedAt: {
         type: Date,
         required: true,
-        default: Date.now,
+        default: Date.now, // check time later
     },
 });
 
