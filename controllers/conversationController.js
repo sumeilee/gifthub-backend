@@ -52,7 +52,10 @@ const conversationControllers = {
         .find({
           users: user,
         })
-        .populate("lastMessage");
+        .populate({
+          path: "lastMessage",
+          populate: { path: "author", select: { first_name: 1, last_name: 1 } },
+        });
 
       if (conversations.length > 0) {
         res.status(200).json({
