@@ -57,6 +57,8 @@ app.post("/api/v1/conversations", conversationController.createConversation);
 
 app.get("/api/v1/messages", messageController.getMessages);
 app.post("/api/v1/messages", messageController.createMessage);
+app.patch("/api/v1/messages/:id", messageController.updateMessage);
+app.post("/api/v1/messages/:id", messageController.deleteMessage);
 
 mongoose
   .connect(mongoURI, {useNewUrlParser: true, useUnifiedTopology: true})
