@@ -1,15 +1,32 @@
-const services = require("../services/conversation");
+const conversationModel = require("./../models/conversationModel");
+const itemModel = require("./../models/itemModel");
 
 const conversationControllers = {
   createConversation: async (req, res) => {
-    const { participantsStr, item } = req.body;
-    const participants = participantsStr.split(",");
+    const { users, item } = req.body;
 
     try {
-      const conversation = await services.createConversation(
-        participants,
-        item
-      );
+      const doc = await itemModel.findOne({ _id: item });
+      if (!doc) {
+        res.status(400).json({
+          success: false,
+          message: "Conversation must be attached to existing item",
+        });
+        return;
+      }
+
+      if (!users.includes(doc.postedBy.toString())) {
+        res.status(400).json({
+          success: false,
+          message: "Conversation must include owner of item",
+        });
+        return;
+      }
+
+      const conversation = await conversationModel.create({
+        users,
+        item,
+      });
 
       if (conversation) {
         res.status(201).json({
@@ -20,7 +37,6 @@ const conversationControllers = {
         throw Error("Error creating conversation");
       }
     } catch (err) {
-      console.log(err);
       res.status(500).json({
         success: false,
         message: err.message,
@@ -28,28 +44,31 @@ const conversationControllers = {
     }
   },
 
-  getConversation: async (req, res) => {
-    const { participants, item } = req.body;
+  getConversations: async (req, res) => {
+    const { user } = req.query;
 
     try {
-      const conversation = await services.getConversation(participants, item);
+      const conversations = await conversationModel
+        .find({
+          users: user,
+        })
+        .populate("lastMessage");
 
-      if (conversation) {
+      if (conversations.length > 0) {
         res.status(200).json({
           success: true,
-          conversation,
+          conversations,
         });
       } else {
-        res.json({
+        res.status(404).json({
           success: false,
-          message: "No conversations found",
+          message: "No conversations for this user found",
         });
       }
     } catch (err) {
-      console.log(err);
       res.status(500).json({
         success: false,
-        message: "Error retrieving conversation",
+        message: "Error getting conversations",
       });
     }
   },
