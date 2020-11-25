@@ -15,7 +15,7 @@ const messageController = {
       if (doc) {
         res.status(201).json({
           success: true,
-          message: response,
+          message: doc,
         });
       } else {
         throw Error("Error creating message");
