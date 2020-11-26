@@ -1,21 +1,52 @@
-const services = require("./../services/message");
+const conversationModel = require("./../models/conversationModel");
+const messageModel = require("./../models/messageModel");
 
 const messageController = {
   createMessage: async (req, res) => {
     const { author, message, attachments, conversation } = req.body;
 
     try {
-      const doc = await services.createMessage(
+      if (!conversation || !author || !message) {
+        res.status(400).json({
+          success: false,
+          message: "Conversation, author and message must be provided",
+        });
+      }
+
+      const doc = await conversationModel.findOne({
+        _id: conversation,
+      });
+
+      if (!doc) {
+        res.status(400).json({
+          success: false,
+          message: "Conversation not found",
+        });
+        return;
+      }
+
+      if (!doc.users.includes(author)) {
+        res.status(400).json({
+          success: false,
+          message: "Author is not of conversation provided",
+        });
+        return;
+      }
+
+      const msg = await messageModel.create({
         conversation,
         author,
         message,
-        attachments
-      );
+        attachments,
+      });
 
-      if (doc) {
+      if (msg) {
+        doc.lastMessage = msg._id;
+        await doc.save();
+
         res.status(201).json({
           success: true,
-          message: doc,
+          message: msg,
         });
       } else {
         throw Error("Error creating message");
@@ -32,14 +63,32 @@ const messageController = {
     const { conversation, asc } = req.query;
 
     try {
-      let messages;
+      let sortOrder = 1;
 
-      if (conversation) {
-        messages = await services.getMessagesByConversation(conversation, asc);
-      } else {
-        throw Error("Please provide conversation ID");
+      if (!asc) {
+        sortOrder = -1;
       }
 
+      if (!conversation) {
+        res.status(400).json({
+          success: false,
+          message: "Conversation must be provided",
+        });
+        return;
+      }
+
+      const messages = await messageModel
+        .find({ conversation })
+        .populate("author", "first_name last_name")
+        .sort({ postedAt: sortOrder });
+
+      if (messages.length === 0) {
+        res.status(404).json({
+          success: false,
+          message: "No messages found",
+        });
+        return;
+      }
       res.status(200).json({
         success: true,
         messages,
@@ -57,11 +106,25 @@ const messageController = {
     const { message, attachments } = req.body;
 
     try {
-      const doc = await services.updateMessage(id, message, attachments);
+      const msg = await messageModel.findOne({ _id: id });
+
+      if (!msg) {
+        res.status(404).json({
+          success: false,
+          message: "Message not found",
+        });
+        return;
+      }
+
+      msg.message = message;
+      msg.attachments = attachments;
+      msg.updatedAt = Date.now();
+
+      await msg.save();
 
       res.status(200).json({
         success: true,
-        message: doc,
+        message: msg,
       });
     } catch (err) {
       res.status(500).json({
@@ -75,19 +138,20 @@ const messageController = {
     const { id } = req.params;
 
     try {
-      const response = await services.deleteMessage(id);
+      const response = await messageModel.deleteOne({ _id: id });
 
       if (response.n === 0) {
-        res.status(401).json({
+        res.status(404).json({
           success: false,
           message: "Message not found",
         });
-      } else {
-        res.status(200).json({
-          success: true,
-          message: "Message deleted",
-        });
+        return;
       }
+
+      res.status(200).json({
+        success: true,
+        message: "Message deleted",
+      });
     } catch (err) {
       res.status(500).json({
         success: false,

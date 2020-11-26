@@ -13,10 +13,10 @@ const conversationController = require("./controllers/conversationController");
 const messageController = require("./controllers/messageController");
 
 app.use(cors());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const {DB_USER, DB_PASS, DB_HOST, DB_NAME} = process.env;
+const { DB_USER, DB_PASS, DB_HOST, DB_NAME } = process.env;
 const mongoURI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`;
 mongoose.set("useFindAndModify", false);
 
@@ -50,18 +50,17 @@ app.post("/api/v1/user/login", userController.userLogin); // login post
 app.get("/api/v1/users/:id", userController.userProfile); // get user profile
 app.patch("/api/v1/user/:id", userController.updateUser); // update route
 
-
 // MESSAGE ROUTES
-app.get("/api/v1/conversations", conversationController.getConversation);
+app.get("/api/v1/conversations", conversationController.getConversations);
 app.post("/api/v1/conversations", conversationController.createConversation);
 
 app.get("/api/v1/messages", messageController.getMessages);
 app.post("/api/v1/messages", messageController.createMessage);
 app.patch("/api/v1/messages/:id", messageController.updateMessage);
-app.post("/api/v1/messages/:id", messageController.deleteMessage);
+app.delete("/api/v1/messages/:id", messageController.deleteMessage);
 
 mongoose
-  .connect(mongoURI, {useNewUrlParser: true, useUnifiedTopology: true})
+  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("DB connection successful");
     app.listen(port, () => {
