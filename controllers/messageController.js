@@ -79,6 +79,7 @@ const messageController = {
 
       const messages = await messageModel
         .find({ conversation })
+        .populate("author", "first_name last_name")
         .sort({ postedAt: sortOrder });
 
       if (messages.length === 0) {
