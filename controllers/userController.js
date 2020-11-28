@@ -97,9 +97,9 @@ const userController = {
         }
         const token = jwt.sign(
           {
+            id: result._id,
             first_name: result.first_name,
             last_name: result.last_name,
-            email: result.email,
           },
           process.env.JWT_SECRET,
           {
@@ -126,43 +126,59 @@ const userController = {
       });
   },
 
-  userLogout(req, res) {},
-
   userProfile(req, res) {
-    userModel
-      .findOne({_id: req.params.id})
-      .then((profileResult) => {
-        if (!profileResult) {
-          res.statusCode = 401;
-          res.json({
-            success: false,
-            message: "Invalid user",
-          });
-          return;
-        } else {
-          res.json({
-            firstName: profileResult.first_name,
-            lastName: profileResult.last_name,
-            email: profileResult.email,
-            userType: profileResult.userType,
-            organisation: profileResult.organisation,
-          });
-          return;
-        }
-      })
-      .catch((err) => {
-        res.statusCode = 500;
-        res.json({
-          success: false,
-          message: "An unexpected error has occured",
-        });
+    const authToken = req.headers.auth_token;
+    if (!authToken) {
+      res.json({
+        success: false,
+        message: "Auth header value is missing",
       });
+      return;
+    }
+    try {
+      const userData = jwt.verify(authToken, process.env.JWT_SECRET, {
+        algorithms: ["HS384"],
+      });
+
+      res.json(userData);
+    } catch (err) {
+      res.json({
+        success: false,
+        message: "Auth token is invalid",
+      });
+      return;
+    }
   },
   updateUser(req, res) {
+    const authToken = req.headers.auth_token;
+    let userData;
+
+    if (!authToken) {
+      res.json({
+        success: false,
+        message: "Auth header value is missing",
+      });
+      return;
+    }
+    try {
+      userData = jwt.verify(authToken, process.env.JWT_SECRET, {
+        algorithms: ["HS384"],
+      });
+      res.json(userData);
+
+      next();
+    } catch (err) {
+      res.json({
+        success: false,
+        message: "Auth token is invalid",
+      });
+      return;
+    }
+
     userModel
       .updateOne(
         {
-          _id: req.params.id,
+          id: userData._id,
         },
         {
           first_name: req.body.firstName,

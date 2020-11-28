@@ -29,26 +29,22 @@ app.get("/api/v1", (req, res) => {
 
 // ROUTES
 
-//=== Item Route ====
+// ITEM ROUTES
 
 // // show/get route
-// app.get("api/v1/items/:id", itemController.getItem);
-
-// create route
+app.get("/api/v1/offers", itemController.listOffers);
+app.get("/api/v1/requests", itemController.listRequests);
+app.get("/api/v1/items/:id", itemController.getItem);
 app.post("/api/v1/items", itemController.createItem);
-
-// update route
 app.patch("/api/v1/items/:id", itemController.updateItem);
-
-// delete route
 app.delete("/api/v1/items/:id", itemController.deleteItem);
 
 // USER ROUTES
 app.post("/api/v1/user/register", userController.registerUser); // registration post
 app.post("/api/v1/user/login", userController.userLogin); // login post
 // app.post("/api/v1/user/login", userController.userLogout); // logout post
-app.get("/api/v1/users/:id", userController.userProfile); // get user profile
-app.patch("/api/v1/user/:id", userController.updateUser); // update route
+app.get("/api/v1/users/me", userController.userProfile); // get user profile
+app.patch("/api/v1/users/me", userController.updateUser); // update route
 
 // MESSAGE ROUTES
 app.get("/api/v1/conversations", conversationController.getConversations);
@@ -71,3 +67,4 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
