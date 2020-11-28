@@ -29,18 +29,14 @@ app.get("/api/v1", (req, res) => {
 
 // ROUTES
 
-//=== Item Route ====
+// ITEM ROUTES
 
 // // show/get route
-// app.get("api/v1/items/:id", itemController.getItem);
-
-// create route
+app.get("/api/v1/offers", itemController.listOffers);
+app.get("/api/v1/requests", itemController.listRequests);
+app.get("/api/v1/items/:id", itemController.getItem);
 app.post("/api/v1/items", itemController.createItem);
-
-// update route
 app.patch("/api/v1/items/:id", itemController.updateItem);
-
-// delete route
 app.delete("/api/v1/items/:id", itemController.deleteItem);
 
 // USER ROUTES
@@ -60,13 +56,13 @@ app.patch("/api/v1/messages/:id", messageController.updateMessage);
 app.delete("/api/v1/messages/:id", messageController.deleteMessage);
 
 mongoose
-  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log("DB connection successful");
-    app.listen(port, () => {
-        console.log(`App listening on port: ${port}`);
+    .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        console.log("DB connection successful");
+        app.listen(port, () => {
+            console.log(`App listening on port: ${port}`);
+        });
+    })
+    .catch((err) => {
+        console.log(err);
     });
-})
-.catch((err) => {
-    console.log(err);
-});
