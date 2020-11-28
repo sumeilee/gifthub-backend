@@ -1,7 +1,71 @@
-const { deleteModel } = require("mongoose");
+const mongoose = require("mongoose");
 const itemModel = require("../models/itemModel");
 
 const itemControllers = {
+    getItem: (req, res) => {
+        itemModel
+            .findOne({
+                _id: req.params.id,
+            })
+            .then((result) => {
+                if (!result) {
+                    console.log(err);
+                    res.statusCode = 404;
+                    res.json("Error in retrieving item from db"); //review msg
+                    return;
+                }
+                res.json(result);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.statusCode = 500;
+                res.json("No such item found in db"); //review msg
+            });
+    },
+    listOffers: (req, res) => {
+        itemModel
+            .find({
+                postType: {
+                    $eq: "Offer",
+                },
+            })
+            .then((results) => {
+                if (!results) {
+                    console.log(err);
+                    res.statusCode = 404;
+                    res.json("Error in retrieving offers from db"); //review msg
+                    return;
+                }
+                res.json(results);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.statusCode = 500;
+                res.json("No offers found in db"); //review msg
+            });
+    },
+    listRequests: (req, res) => {
+        itemModel
+            .find({
+                postType: {
+                    $eq: "Request",
+                },
+            })
+            .then((results) => {
+                if (!results) {
+                    console.log(err);
+                    res.statusCode = 404;
+                    res.json("Error in retrieving offers from db"); //review msg
+                    return;
+                }
+                res.json(results);
+            })
+            .catch((err) => {
+                console.log(err);
+                res.statusCode = 500;
+                res.json("No requests found in db"); //review msg
+            });
+    },
     createItem: (req, res) => {
         console.log(req.body);
         itemModel
