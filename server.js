@@ -47,8 +47,8 @@ app.delete("/api/v1/items/:id", itemController.deleteItem);
 app.post("/api/v1/user/register", userController.registerUser); // registration post
 app.post("/api/v1/user/login", userController.userLogin); // login post
 // app.post("/api/v1/user/login", userController.userLogout); // logout post
-app.get("/api/v1/users/:id", userController.userProfile); // get user profile
-app.patch("/api/v1/user/:id", userController.updateUser); // update route
+app.get("/api/v1/users/me", userController.userProfile); // get user profile
+app.patch("/api/v1/users/me", userController.updateUser); // update route
 
 // MESSAGE ROUTES
 app.get("/api/v1/conversations", conversationController.getConversations);
