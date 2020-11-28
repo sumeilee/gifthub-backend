@@ -59,13 +59,41 @@ const messageController = {
     }
   },
 
+  getMessage: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const message = await messageModel
+        .findOne({ _id: id })
+        .populate("author", "first_name last_name");
+
+      if (!message) {
+        res.status(404).json({
+          sucess: false,
+          message: "Message not found",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message,
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  },
+
   getMessages: async (req, res) => {
     const { conversation, asc } = req.query;
 
     try {
       let sortOrder = 1;
 
-      if (!asc) {
+      if (asc == -1) {
         sortOrder = -1;
       }
 
