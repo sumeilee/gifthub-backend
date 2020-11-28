@@ -21,10 +21,10 @@ const mongoURI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`;
 mongoose.set("useFindAndModify", false);
 
 app.get("/api/v1", (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "gifthub api reached",
-    });
+  res.status(200).json({
+    success: true,
+    message: "gifthub api reached",
+  });
 });
 
 // ROUTES
@@ -56,6 +56,7 @@ app.post("/api/v1/conversations", conversationController.createConversation);
 
 app.get("/api/v1/messages", messageController.getMessages);
 app.post("/api/v1/messages", messageController.createMessage);
+app.get("/api/v1/messages/:id", messageController.getMessage);
 app.patch("/api/v1/messages/:id", messageController.updateMessage);
 app.delete("/api/v1/messages/:id", messageController.deleteMessage);
 
@@ -64,9 +65,9 @@ mongoose
   .then(() => {
     console.log("DB connection successful");
     app.listen(port, () => {
-        console.log(`App listening on port: ${port}`);
+      console.log(`App listening on port: ${port}`);
     });
-})
-.catch((err) => {
+  })
+  .catch((err) => {
     console.log(err);
-});
+  });
