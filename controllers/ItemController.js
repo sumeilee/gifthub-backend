@@ -7,6 +7,7 @@ const itemControllers = {
             .findOne({
                 _id: req.params.id,
             })
+            // .populate("postedBy", "first_name last_name"); // check
             .then((result) => {
                 if (!result) {
                     console.log(err);
