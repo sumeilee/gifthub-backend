@@ -6,7 +6,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node server.js",
-        "seedTransaction": "node scripts/seed/transactionData.js"
+        "seedTransaction": "node scripts/seedTransaction.js"
     },
     "keywords": [],
     "author": "",
