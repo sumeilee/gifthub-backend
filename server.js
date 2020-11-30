@@ -39,7 +39,7 @@ app.patch("/api/v1/items/:id", itemController.updateItem);
 app.delete("/api/v1/items/:id", itemController.deleteItem);
 
 // TRANSACTION ROUTES
-app.get("/api/v1/transactions", transactionController.getTransaction);
+app.get("/api/v1/transactions/:id", transactionController.getTransaction);
 app.post("/api/v1/transactions", transactionController.createTransaction);
 
 // USER ROUTES
