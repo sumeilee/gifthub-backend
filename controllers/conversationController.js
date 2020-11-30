@@ -45,17 +45,33 @@ const conversationControllers = {
   },
 
   getConversations: async (req, res) => {
-    const { user } = req.query;
+    const { user, users, item } = req.query;
+    let findObj;
 
     try {
-      const conversations = await conversationModel
-        .find({
+      if (user) {
+        findObj = {
           users: user,
-        })
-        .populate({
-          path: "lastMessage",
-          populate: { path: "author", select: { first_name: 1, last_name: 1 } },
+        };
+      } else if (users && item) {
+        const usersArr = users.split(",");
+
+        findObj = {
+          users: { $all: usersArr },
+          item: item,
+        };
+      } else {
+        res.status(400).json({
+          success: false,
+          message: "Please provide the necessary query parameters",
         });
+        return;
+      }
+
+      const conversations = await conversationModel.find(findObj).populate({
+        path: "lastMessage",
+        populate: { path: "author", select: { first_name: 1, last_name: 1 } },
+      });
 
       if (conversations.length > 0) {
         res.status(200).json({
@@ -65,13 +81,39 @@ const conversationControllers = {
       } else {
         res.status(404).json({
           success: false,
-          message: "No conversations for this user found",
+          message: "No conversations found",
         });
       }
     } catch (err) {
       res.status(500).json({
         success: false,
-        message: "Error getting conversations",
+        message: err.message,
+      });
+    }
+  },
+
+  getConversation: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const conversation = await conversationModel.findOne({ _id: id });
+
+      if (!conversation) {
+        res.status(404).json({
+          success: false,
+          message: "Conversation not found",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        conversation,
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message,
       });
     }
   },

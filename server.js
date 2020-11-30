@@ -47,6 +47,7 @@ app.get("/api/v1/users/me", userController.userProfile); // get user profile
 app.patch("/api/v1/users/me", userController.updateUser); // update route
 
 // MESSAGE ROUTES
+app.get("/api/v1/conversations/:id", conversationController.getConversation);
 app.get("/api/v1/conversations", conversationController.getConversations);
 app.post("/api/v1/conversations", conversationController.createConversation);
 
@@ -67,4 +68,3 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
