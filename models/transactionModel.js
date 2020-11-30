@@ -16,6 +16,16 @@ const transactionSchema = new mongoose.Schema({
         ref: "Item",
         required: true,
     },
+    date_delivered: {
+        type: Date,
+        required: true,
+    },
+    status: {
+        type: String,
+        enum: ["Pending", "Fulfilled"],
+        required: true,
+        default: "Pending",
+    },
     createdAt: {
         type: Date,
         required: true,
