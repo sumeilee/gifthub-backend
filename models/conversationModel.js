@@ -1,15 +1,19 @@
 const mongoose = require("mongoose");
 
 const conversationSchema = new mongoose.Schema({
-  participants: {
-    type: [mongoose.Schema.ObjectId],
-    ref: "User",
-    require: true,
-  },
+  users: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,
-    required: true,
+  },
+  lastMessage: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Message",
   },
   item: {
     type: mongoose.Schema.ObjectId,
