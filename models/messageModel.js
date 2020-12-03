@@ -15,6 +15,11 @@ const messageSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  messageType: {
+    type: String,
+    enum: ["chat", "auto"],
+    default: "chat",
+  },
   postedAt: {
     type: Date,
     default: Date.now,
