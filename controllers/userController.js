@@ -1,4 +1,5 @@
 const userModel = require("../models/userModel");
+const itemModel = require("../models/itemModel");
 const uuid = require("uuid");
 const SHA256 = require("crypto-js/sha256");
 const jwt = require("jsonwebtoken");
@@ -100,6 +101,7 @@ const userController = {
             id: result._id,
             first_name: result.first_name,
             last_name: result.last_name,
+            email: result.email,
           },
           process.env.JWT_SECRET,
           {
@@ -140,7 +142,10 @@ const userController = {
         algorithms: ["HS384"],
       });
 
-      res.json(userData);
+      res.json({
+        success: true,
+        user: userData,
+      });
     } catch (err) {
       res.json({
         success: false,
@@ -164,9 +169,6 @@ const userController = {
       userData = jwt.verify(authToken, process.env.JWT_SECRET, {
         algorithms: ["HS384"],
       });
-      res.json(userData);
-
-      next();
     } catch (err) {
       res.json({
         success: false,
@@ -174,22 +176,16 @@ const userController = {
       });
       return;
     }
-
     userModel
       .updateOne(
         {
-          id: userData._id,
+          _id: userData.id,
         },
-        {
-          first_name: req.body.firstName,
-          last_name: req.body.lastName,
-          email: req.body.email,
-          password: req.body.password,
-          userType: req.body.userType,
-          organisation: req.body.organisation,
-        }
+        req.body
       )
+
       .then((profileUpdated) => {
+        console.log(profileUpdated);
         if (profileUpdated) {
           res.json({
             success: true,
@@ -204,6 +200,48 @@ const userController = {
           success: false,
           message: "An unexpected error has occured",
         });
+      });
+  },
+
+  userItems: (req, res) => {
+    const authToken = req.headers.auth_token;
+    let userData;
+
+    if (!authToken) {
+      res.json({
+        success: false,
+        message: "Auth header value is missing",
+      });
+      return;
+    }
+    try {
+      userData = jwt.verify(authToken, process.env.JWT_SECRET, {
+        algorithms: ["HS384"],
+      });
+      // res.json(userData);
+    } catch (err) {
+      console.log(err);
+      res.json({
+        success: false,
+        message: "Auth token is invalid",
+      });
+      return;
+    }
+
+    itemModel
+      .find({
+        postedBy: userData.id,
+      })
+      .then((itemResult) => {
+        res.json({
+          success: true,
+          message: "item listed",
+          items: itemResult,
+        });
+        return;
+      })
+      .catch((err) => {
+        console.log(err);
       });
   },
 };
