@@ -4,9 +4,10 @@ const itemModel = require("./../models/itemModel");
 const conversationControllers = {
   createConversation: async (req, res) => {
     const { users, item } = req.body;
-
+    // console.log(`item: ${item}`);
     try {
       const doc = await itemModel.findOne({ _id: item });
+      // console.log(doc);
       if (!doc) {
         res.status(400).json({
           success: false,
@@ -68,22 +69,31 @@ const conversationControllers = {
         return;
       }
 
-      const conversations = await conversationModel.find(findObj).populate({
-        path: "lastMessage",
-        populate: { path: "author", select: { first_name: 1, last_name: 1 } },
+      const conversations = await conversationModel
+        .find(findObj)
+        .populate("users", "first_name last_name")
+        .populate({
+          path: "lastMessage",
+          populate: { path: "author", select: { first_name: 1, last_name: 1 } },
+        })
+        .sort({ updatedAt: -1 });
+
+      res.status(200).json({
+        success: true,
+        conversations,
       });
 
-      if (conversations.length > 0) {
-        res.status(200).json({
-          success: true,
-          conversations,
-        });
-      } else {
-        res.status(404).json({
-          success: false,
-          message: "No conversations found",
-        });
-      }
+      // if (conversations.length > 0) {
+      //   res.status(200).json({
+      //     success: true,
+      //     conversations,
+      //   });
+      // } else {
+      //   res.status(404).json({
+      //     success: false,
+      //     message: "No conversations found",
+      //   });
+      // }
     } catch (err) {
       res.status(500).json({
         success: false,
