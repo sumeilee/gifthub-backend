@@ -58,6 +58,7 @@ app.post("/api/v1/user/register", userController.registerUser); // registration 
 app.post("/api/v1/user/login", userController.userLogin); // login post
 // app.post("/api/v1/user/login", userController.userLogout); // logout post
 app.get("/api/v1/users/me", userController.userProfile); // get user profile
+app.get("/api/v1/users/items", userController.userItems); // get user items
 app.patch("/api/v1/users/me", userController.updateUser); // update route
 
 // MESSAGE ROUTES
