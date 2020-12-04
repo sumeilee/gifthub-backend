@@ -3,13 +3,14 @@ const messageModel = require("./../models/messageModel");
 
 const messageController = {
   createMessage: async (req, res) => {
-    const { author, message, attachments, conversation } = req.body;
+    const { author, recipient, message, attachments, conversation } = req.body;
 
     try {
-      if (!conversation || !author || !message) {
+      if (!conversation || !author || !message || !recipient) {
         res.status(400).json({
           success: false,
-          message: "Conversation, author and message must be provided",
+          message:
+            "Conversation, author, recipient and message must be provided",
         });
       }
 
@@ -36,6 +37,7 @@ const messageController = {
       const msg = await messageModel.create({
         conversation,
         author,
+        recipient,
         message,
         attachments,
       });

@@ -4,6 +4,13 @@ const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
 const port = process.env.PORT || 5000;
 
 const userController = require("./controllers/userController");
@@ -21,11 +28,15 @@ const { DB_USER, DB_PASS, DB_HOST, DB_NAME } = process.env;
 const mongoURI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`;
 mongoose.set("useFindAndModify", false);
 
+// app.get("/", (req, res) => {
+//   res.status(200).send("connect to index route");
+// });
+
 app.get("/api/v1", (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "gifthub api reached",
-    });
+  res.status(200).json({
+    success: true,
+    message: "gifthub api reached",
+  });
 });
 
 // ROUTES
@@ -60,14 +71,28 @@ app.get("/api/v1/messages/:id", messageController.getMessage);
 app.patch("/api/v1/messages/:id", messageController.updateMessage);
 app.delete("/api/v1/messages/:id", messageController.deleteMessage);
 
+io.on("connection", (socket) => {
+  console.log(`new socket connection: ${socket.id}`);
+});
+
+const messageModel = require("./models/messageModel");
+
+try {
+  messageModel.watch().on("change", async (data) => {
+    const message = data.fullDocument;
+  });
+} catch (err) {
+  console.log(err);
+}
+
 mongoose
-    .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log("DB connection successful");
-        app.listen(port, () => {
-            console.log(`App listening on port: ${port}`);
-        });
-    })
-    .catch((err) => {
-        console.log(err);
+  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    console.log("DB connection successful");
+    server.listen(port, () => {
+      console.log(`App listening on port: ${port}`);
     });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
