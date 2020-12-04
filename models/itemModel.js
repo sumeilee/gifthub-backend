@@ -18,7 +18,13 @@ const itemSchema = new mongoose.Schema({
     },
     category: {
         type: String,
-        // enum: ["Furniture", "Appliances", "Infant and Children Supplies"], // add more later
+        enum: [
+            "Furniture",
+            "Appliances",
+            "Infant and Children",
+            "Medical Aids",
+            "Food",
+        ], // add more later
         required: true,
     },
     images: [String],
@@ -30,6 +36,7 @@ const itemSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ["Open", "Pending", "Fulfilled"],
+        default: "Open",
         required: true,
     },
     tags: [String],
