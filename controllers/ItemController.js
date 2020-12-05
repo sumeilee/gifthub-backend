@@ -83,7 +83,7 @@ const itemControllers = {
         delivery: req.body.delivery,
         // status: req.body.status,
         tags: req.body.tags,
-        postedBy: user.id, //to review in frontend
+        postedBy: user.id, //req.body.postedBy
       })
       .then((result) => {
         console.log(result);
