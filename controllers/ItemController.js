@@ -76,7 +76,7 @@ const itemControllers = {
     itemModel
       .create({
         title: req.body.title,
-        postType: req.body.type,
+        postType: req.body.postType,
         description: req.body.description,
         category: req.body.category,
         images: req.body.images,
