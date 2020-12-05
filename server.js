@@ -14,18 +14,18 @@ const conversationController = require("./controllers/conversationController");
 const messageController = require("./controllers/messageController");
 
 app.use(cors());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const {DB_USER, DB_PASS, DB_HOST, DB_NAME} = process.env;
+const { DB_USER, DB_PASS, DB_HOST, DB_NAME } = process.env;
 const mongoURI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`;
 mongoose.set("useFindAndModify", false);
 
 app.get("/api/v1", (req, res) => {
-    res.status(200).json({
-        success: true,
-        message: "gifthub api reached",
-    });
+  res.status(200).json({
+    success: true,
+    message: "gifthub api reached",
+  });
 });
 
 // ROUTES
@@ -51,19 +51,35 @@ app.get("/api/v1/users/items", userController.userItems); // get user items
 app.patch("/api/v1/users/me", userController.updateUser); // update route
 
 // MESSAGE ROUTES
-app.get("/api/v1/conversations/:id", conversationController.getConversation);
-app.get("/api/v1/conversations", conversationController.getConversations);
-app.post("/api/v1/conversations", conversationController.createConversation);
+app.get(
+  "/api/v1/conversations/:id",
+  verifyToken,
+  conversationController.getConversation
+);
+app.get(
+  "/api/v1/conversations",
+  verifyToken,
+  conversationController.getConversations
+);
+app.post(
+  "/api/v1/conversations",
+  verifyToken,
+  conversationController.createConversation
+);
 
-app.get("/api/v1/messages", messageController.getMessages);
-app.post("/api/v1/messages", messageController.createMessage);
-app.get("/api/v1/messages/:id", messageController.getMessage);
-app.patch("/api/v1/messages/:id", messageController.updateMessage);
-app.delete("/api/v1/messages/:id", messageController.deleteMessage);
+app.get("/api/v1/messages", verifyToken, messageController.getMessages);
+app.post("/api/v1/messages", verifyToken, messageController.createMessage);
+app.get("/api/v1/messages/:id", verifyToken, messageController.getMessage);
+app.patch("/api/v1/messages/:id", verifyToken, messageController.updateMessage);
+app.delete(
+  "/api/v1/messages/:id",
+  verifyToken,
+  messageController.deleteMessage
+);
 
 mongoose
 
-  .connect(mongoURI, {useNewUrlParser: true, useUnifiedTopology: true})
+  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("DB connection successful");
     app.listen(port, () => {
@@ -74,4 +90,28 @@ mongoose
     console.log(err);
   });
 
+const verifyToken = (req, res, next) => {
+  const authToken = req.headers.auth_token;
 
+  if (!authToken) {
+    res.status(500).json({
+      success: false,
+      message: "Auth header value is missing",
+    });
+    return;
+  }
+
+  try {
+    jwt.verify(authToken, process.env.JWT_SECRET, {
+      algorithms: ["HS384"],
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Auth token is invalid",
+    });
+    return;
+  }
+
+  next();
+};
