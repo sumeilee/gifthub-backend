@@ -18,13 +18,13 @@ const transactionSchema = new mongoose.Schema({
   },
   date_delivered: {
     type: Date,
-    // required: true,
+    required: true,
   },
   status: {
     type: String,
-    enum: ["Accepted", "Fulfilled"],
+    enum: ["Pending", "Fulfilled"],
     required: true,
-    default: "Accepted",
+    default: "Pending",
   },
   createdAt: {
     type: Date,

@@ -36,7 +36,6 @@ const transactionControllers = {
         res.json({
           success: true,
           message: "transaction successfully created",
-          transaction: result,
         });
       })
       .catch((err) => {
