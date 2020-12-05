@@ -23,7 +23,7 @@ const userController = {
     }
 
     userModel
-      .findOne({email: req.body.email})
+      .findOne({ email: req.body.email })
 
       .then((user) => {
         if (user) {
@@ -76,7 +76,7 @@ const userController = {
     }
 
     userModel
-      .findOne({email: req.body.email})
+      .findOne({ email: req.body.email })
       .then((result) => {
         if (!result) {
           res.statusCode = 401;
