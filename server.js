@@ -4,14 +4,32 @@ const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
+const server = require("http").createServer(app);
+const io = require("socket.io")(server, {
+  cors: {
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://gifthubsg.herokuapp.com"
+        : "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
 const port = process.env.PORT || 5000;
 
 const userController = require("./controllers/userController");
-const userModel = require("./models/userModel");
 const itemController = require("./controllers/ItemController");
 const transactionController = require("./controllers/TransactionController");
 const conversationController = require("./controllers/conversationController");
 const messageController = require("./controllers/messageController");
+
+const messageModel = require("./models/messageModel");
+
+const {
+  getUserSocket,
+  createUserSocket,
+  deleteUserSocket,
+} = require("./services/sockets");
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
@@ -34,21 +52,28 @@ app.get("/api/v1", (req, res) => {
 app.get("/api/v1/offers", itemController.listOffers);
 app.get("/api/v1/requests", itemController.listRequests);
 app.get("/api/v1/items/:id", itemController.getItem);
-app.post("/api/v1/items", itemController.createItem);
-app.patch("/api/v1/items/:id", itemController.updateItem);
-app.delete("/api/v1/items/:id", itemController.deleteItem);
+app.post("/api/v1/items", verifyToken, itemController.createItem);
+app.patch("/api/v1/items/:id", verifyToken, itemController.updateItem);
+app.delete("/api/v1/items/:id", verifyToken, itemController.deleteItem);
 
 // TRANSACTION ROUTES
-app.get("/api/v1/transactions/:id", transactionController.getTransaction);
-app.post("/api/v1/transactions", transactionController.createTransaction);
+app.get(
+  "/api/v1/transactions/:id",
+  verifyToken,
+  transactionController.getTransaction
+);
+app.post(
+  "/api/v1/transactions",
+  verifyToken,
+  transactionController.createTransaction
+);
 
 // USER ROUTES
 app.post("/api/v1/user/register", userController.registerUser); // registration post
 app.post("/api/v1/user/login", userController.userLogin); // login post
-// app.post("/api/v1/user/login", userController.userLogout); // logout post
-app.get("/api/v1/users/me", userController.userProfile); // get user profile
-app.get("/api/v1/users/items", userController.userItems); // get user items
-app.patch("/api/v1/users/me", userController.updateUser); // update route
+app.get("/api/v1/users/me", verifyToken, userController.userProfile); // get user profile
+app.get("/api/v1/users/items", verifyToken, userController.userItems); // get user items
+app.patch("/api/v1/users/me", verifyToken, userController.updateUser); // update route
 
 // MESSAGE ROUTES
 app.get(
@@ -77,12 +102,54 @@ app.delete(
   messageController.deleteMessage
 );
 
-mongoose
+io.on("connection", (socket) => {
+  console.log(`new socket connection: ${socket.id}`);
 
+  socket.on("disconnect", async () => {
+    const response = await deleteUserSocket(socket.id);
+    if (response.n > 0) {
+      console.log(`userSocket for ${socket.id} deleted`);
+    } else {
+      console.log(`userSocket for ${socket.id} not found`);
+    }
+  });
+
+  socket.on("login", async (user) => {
+    try {
+      const userSocket = await createUserSocket(user, socket.id);
+      if (userSocket) {
+        console.log(userSocket);
+      } else {
+        console.log("user socket not created");
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  });
+});
+
+try {
+  messageModel.watch().on("change", async (data) => {
+    const message = data.fullDocument;
+    const recipient = message.recipient;
+
+    try {
+      const userSocket = await getUserSocket(recipient);
+      console.log(`emitting message to ${userSocket.socket}`);
+      io.to(userSocket.socket).emit("message", message);
+    } catch (err) {
+      console.log(err.message);
+    }
+  });
+} catch (err) {
+  console.log(err);
+}
+
+mongoose
   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("DB connection successful");
-    app.listen(port, () => {
+    server.listen(port, () => {
       console.log(`App listening on port: ${port}`);
     });
   })
