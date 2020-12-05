@@ -72,15 +72,53 @@ app.get("/api/v1/messages/:id", messageController.getMessage);
 app.patch("/api/v1/messages/:id", messageController.updateMessage);
 app.delete("/api/v1/messages/:id", messageController.deleteMessage);
 
+const {
+  getUserSocket,
+  createUserSocket,
+  deleteUserSocket,
+} = require("./services/sockets");
+
 io.on("connection", (socket) => {
   console.log(`new socket connection: ${socket.id}`);
+
+  socket.on("disconnect", async () => {
+    const response = await deleteUserSocket(socket.id);
+    if (response.n > 0) {
+      console.log(`userSocket for ${socket.id} deleted`);
+    } else {
+      console.log(`userSocket for ${socket.id} not found`);
+    }
+  });
+
+  socket.on("login", async (user) => {
+    try {
+      const userSocket = await createUserSocket(user, socket.id);
+      if (userSocket) {
+        console.log(userSocket);
+      } else {
+        console.log("user socket not created");
+      }
+    } catch (err) {
+      console.log(err.message);
+    }
+  });
 });
 
 const messageModel = require("./models/messageModel");
+const socketController = require("./controllers/socketController");
 
 try {
   messageModel.watch().on("change", async (data) => {
     const message = data.fullDocument;
+    const recipient = message.recipient;
+
+    try {
+      const userSocket = await getUserSocket(recipient);
+      console.log(`emitting message to ${userSocket.socket}`);
+      io.to(userSocket.socket).emit("message", message);
+    } catch (err) {
+      console.log(err.message);
+    }
   });
 } catch (err) {
   console.log(err);

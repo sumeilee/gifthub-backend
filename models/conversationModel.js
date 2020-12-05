@@ -23,7 +23,6 @@ const conversationSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "Item",
   },
-  sockets: [String],
 });
 
 const Conversation = mongoose.model("Conversation", conversationSchema);
