@@ -12,6 +12,7 @@ const messageController = {
           message:
             "Conversation, author, recipient and message must be provided",
         });
+        return;
       }
 
       const doc = await conversationModel.findOne({
