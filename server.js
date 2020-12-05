@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const cors = require("cors");
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const app = express();
 const server = require("http").createServer(app);
@@ -38,6 +39,32 @@ app.use(express.json());
 const { DB_USER, DB_PASS, DB_HOST, DB_NAME } = process.env;
 const mongoURI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`;
 mongoose.set("useFindAndModify", false);
+
+const verifyToken = (req, res, next) => {
+  const authToken = req.headers.auth_token;
+
+  if (!authToken) {
+    res.status(500).json({
+      success: false,
+      message: "Auth header value is missing",
+    });
+    return;
+  }
+
+  try {
+    const userData = jwt.verify(authToken, process.env.JWT_SECRET, {
+      algorithms: ["HS384"],
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Auth token is invalid",
+    });
+    return;
+  }
+
+  next();
+};
 
 app.get("/api/v1", (req, res) => {
   res.status(200).json({
@@ -117,10 +144,13 @@ io.on("connection", (socket) => {
   socket.on("login", async (user) => {
     try {
       const userSocket = await createUserSocket(user, socket.id);
-      if (userSocket) {
-        console.log(userSocket);
-      } else {
-        console.log("user socket not created");
+
+      if (process.env.DEBUG == "true") {
+        if (userSocket) {
+          console.log(userSocket);
+        } else {
+          console.log("user socket not created");
+        }
       }
     } catch (err) {
       console.log(err.message);
@@ -156,29 +186,3 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
-const verifyToken = (req, res, next) => {
-  const authToken = req.headers.auth_token;
-
-  if (!authToken) {
-    res.status(500).json({
-      success: false,
-      message: "Auth header value is missing",
-    });
-    return;
-  }
-
-  try {
-    jwt.verify(authToken, process.env.JWT_SECRET, {
-      algorithms: ["HS384"],
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: "Auth token is invalid",
-    });
-    return;
-  }
-
-  next();
-};
