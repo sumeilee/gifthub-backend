@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const itemModel = require("../models/itemModel");
+const jwt = require("jsonwebtoken");
 
 const itemControllers = {
   getItem: (req, res) => {
@@ -70,6 +71,8 @@ const itemControllers = {
   },
   createItem: (req, res) => {
     console.log(req.body);
+    const user = jwt.decode(req.headers.auth_token);
+
     itemModel
       .create({
         title: req.body.title,
@@ -80,7 +83,7 @@ const itemControllers = {
         delivery: req.body.delivery,
         status: req.body.status,
         tags: req.body.tags,
-        postedBy: req.body.postedBy, //to review in frontend
+        postedBy: user.id, //req.body.postedBy
       })
       .then((result) => {
         res.json({
