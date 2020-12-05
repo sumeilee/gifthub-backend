@@ -7,9 +7,10 @@ const app = express();
 const server = require("http").createServer(app);
 const io = require("socket.io")(server, {
   cors: {
-    origin: process.env.NODE_ENV
-      ? "https://gifthub.herokuapp.com"
-      : "http://localhost:3000",
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://gifthubsg.herokuapp.com"
+        : "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
