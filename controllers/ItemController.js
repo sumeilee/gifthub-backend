@@ -8,10 +8,10 @@ const itemControllers = {
       .findOne({
         _id: req.params.id,
       })
-      // .populate("postedBy", "first_name last_name"); // check
+      .populate("postedBy", "first_name last_name")
+      .populate("transaction")
       .then((result) => {
         if (!result) {
-          console.log(err);
           res.statusCode = 404;
           res.json("Error in retrieving item from db"); //review msg
           return;
@@ -31,9 +31,9 @@ const itemControllers = {
           $eq: "Offer",
         },
       })
+      .populate("postedBy", "first_name last_name")
       .then((results) => {
         if (!results) {
-          console.log(err);
           res.statusCode = 404;
           res.json("Error in retrieving offers from db"); //review msg
           return;
@@ -53,9 +53,10 @@ const itemControllers = {
           $eq: "Request",
         },
       })
+      .populate("postedBy", "first_name last_name")
+      .populate("transaction")
       .then((results) => {
         if (!results) {
-          console.log(err);
           res.statusCode = 404;
           res.json("Error in retrieving offers from db"); //review msg
           return;
@@ -71,6 +72,7 @@ const itemControllers = {
   createItem: (req, res) => {
     console.log(req.body);
     const user = jwt.decode(req.headers.auth_token);
+
     itemModel
       .create({
         title: req.body.title,
@@ -98,9 +100,6 @@ const itemControllers = {
         });
       });
   },
-  // getItem: (req, res) => {
-  //     res.json("get item");
-  // },
 
   updateItem: (req, res) => {
     console.log(req.params.id);
@@ -150,8 +149,10 @@ const itemControllers = {
               $set: itemUpdates,
             },
             // check against schema enum values
-            { runValidators: true }
+            { runValidators: true, new: true }
           )
+          .populate("postedBy", "first_name last_name")
+          .populate("transaction")
           .then((result) => {
             console.log(req.body);
             console.log(result);
@@ -159,6 +160,7 @@ const itemControllers = {
             res.json({
               success: true,
               message: "item successfully updated",
+              item: result,
             });
           })
           .catch((err) => {

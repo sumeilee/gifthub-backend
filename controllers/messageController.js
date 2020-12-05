@@ -42,6 +42,7 @@ const messageController = {
 
       if (msg) {
         doc.lastMessage = msg._id;
+        doc.updatedAt = Date.now();
         await doc.save();
 
         res.status(201).json({
@@ -59,13 +60,41 @@ const messageController = {
     }
   },
 
+  getMessage: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const message = await messageModel
+        .findOne({ _id: id })
+        .populate("author", "first_name last_name");
+
+      if (!message) {
+        res.status(404).json({
+          sucess: false,
+          message: "Message not found",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message,
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  },
+
   getMessages: async (req, res) => {
     const { conversation, asc } = req.query;
 
     try {
       let sortOrder = 1;
 
-      if (!asc) {
+      if (asc == -1) {
         sortOrder = -1;
       }
 
@@ -82,13 +111,13 @@ const messageController = {
         .populate("author", "first_name last_name")
         .sort({ postedAt: sortOrder });
 
-      if (messages.length === 0) {
-        res.status(404).json({
-          success: false,
-          message: "No messages found",
-        });
-        return;
-      }
+      // if (messages.length === 0) {
+      //   res.status(404).json({
+      //     success: false,
+      //     message: "No messages found",
+      //   });
+      //   return;
+      // }
       res.status(200).json({
         success: true,
         messages,

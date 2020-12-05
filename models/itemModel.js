@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const itemSchema = new mongoose.Schema({
+  
     // var name below TBC
     postType: {
         type: String,
@@ -59,6 +60,7 @@ const itemSchema = new mongoose.Schema({
         required: true,
         default: Date.now, // check time later
     },
+
 });
 
 const ItemModel = mongoose.model("Item", itemSchema);
