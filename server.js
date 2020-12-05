@@ -9,7 +9,7 @@ const io = require("socket.io")(server, {
   cors: {
     origin:
       process.env.NODE_ENV === "production"
-        ? "https://gifthub.herokuapp.com"
+        ? "https://gifthubsg.herokuapp.com"
         : "http://localhost:3000",
     methods: ["GET", "POST"],
   },
