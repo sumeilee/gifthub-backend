@@ -36,8 +36,13 @@ const itemSchema = new mongoose.Schema({
   status: {
     type: String,
     enum: ["Open", "Pending", "Fulfilled"],
+<<<<<<< HEAD
     default: "Open",
     required: true,
+=======
+    required: true,
+    default: "Open",
+>>>>>>> a99d8284a346103c422c6ad9f6005ccb2b15ed57
   },
   tags: [String],
   postedBy: {
