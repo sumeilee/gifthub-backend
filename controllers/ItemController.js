@@ -8,6 +8,8 @@ const itemControllers = {
       .findOne({
         _id: req.params.id,
       })
+      .populate("postedBy", "first_name last_name")
+      .populate("transaction")
       .then((result) => {
         if (!result) {
           res.statusCode = 404;
@@ -29,6 +31,7 @@ const itemControllers = {
           $eq: "Offer",
         },
       })
+      .populate("postedBy", "first_name last_name")
       .then((results) => {
         if (!results) {
           res.statusCode = 404;
@@ -50,6 +53,8 @@ const itemControllers = {
           $eq: "Request",
         },
       })
+      .populate("postedBy", "first_name last_name")
+      .populate("transaction")
       .then((results) => {
         if (!results) {
           res.statusCode = 404;
@@ -144,8 +149,10 @@ const itemControllers = {
               $set: itemUpdates,
             },
             // check against schema enum values
-            {runValidators: true}
+            { runValidators: true, new: true }
           )
+          .populate("postedBy", "first_name last_name")
+          .populate("transaction")
           .then((result) => {
             console.log(req.body);
             console.log(result);
@@ -153,6 +160,7 @@ const itemControllers = {
             res.json({
               success: true,
               message: "item successfully updated",
+              item: result,
             });
           })
           .catch((err) => {
