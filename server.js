@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const cors = require("cors");
 const express = require("express");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const app = express();
 const server = require("http").createServer(app);
@@ -39,6 +40,32 @@ const { DB_USER, DB_PASS, DB_HOST, DB_NAME } = process.env;
 const mongoURI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_HOST}/${DB_NAME}`;
 mongoose.set("useFindAndModify", false);
 
+const verifyToken = (req, res, next) => {
+  const authToken = req.headers.auth_token;
+
+  if (!authToken) {
+    res.status(500).json({
+      success: false,
+      message: "Auth header value is missing",
+    });
+    return;
+  }
+
+  try {
+    const userData = jwt.verify(authToken, process.env.JWT_SECRET, {
+      algorithms: ["HS384"],
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Auth token is invalid",
+    });
+    return;
+  }
+
+  next();
+};
+
 app.get("/api/v1", (req, res) => {
   res.status(200).json({
     success: true,
@@ -52,31 +79,55 @@ app.get("/api/v1", (req, res) => {
 app.get("/api/v1/offers", itemController.listOffers);
 app.get("/api/v1/requests", itemController.listRequests);
 app.get("/api/v1/items/:id", itemController.getItem);
-app.post("/api/v1/items", itemController.createItem);
-app.patch("/api/v1/items/:id", itemController.updateItem);
-app.delete("/api/v1/items/:id", itemController.deleteItem);
+app.post("/api/v1/items", verifyToken, itemController.createItem);
+app.patch("/api/v1/items/:id", verifyToken, itemController.updateItem);
+app.delete("/api/v1/items/:id", verifyToken, itemController.deleteItem);
 
 // TRANSACTION ROUTES
-app.get("/api/v1/transactions/:id", transactionController.getTransaction);
-app.post("/api/v1/transactions", transactionController.createTransaction);
+app.get(
+  "/api/v1/transactions/:id",
+  verifyToken,
+  transactionController.getTransaction
+);
+app.post(
+  "/api/v1/transactions",
+  verifyToken,
+  transactionController.createTransaction
+);
 
 // USER ROUTES
 app.post("/api/v1/user/register", userController.registerUser); // registration post
 app.post("/api/v1/user/login", userController.userLogin); // login post
-app.get("/api/v1/users/me", userController.userProfile); // get user profile
-app.get("/api/v1/users/items", userController.userItems); // get user items
-app.patch("/api/v1/users/me", userController.updateUser); // update route
+app.get("/api/v1/users/me", verifyToken, userController.userProfile); // get user profile
+app.get("/api/v1/users/items", verifyToken, userController.userItems); // get user items
+app.patch("/api/v1/users/me", verifyToken, userController.updateUser); // update route
 
 // MESSAGE ROUTES
-app.get("/api/v1/conversations/:id", conversationController.getConversation);
-app.get("/api/v1/conversations", conversationController.getConversations);
-app.post("/api/v1/conversations", conversationController.createConversation);
+app.get(
+  "/api/v1/conversations/:id",
+  verifyToken,
+  conversationController.getConversation
+);
+app.get(
+  "/api/v1/conversations",
+  verifyToken,
+  conversationController.getConversations
+);
+app.post(
+  "/api/v1/conversations",
+  verifyToken,
+  conversationController.createConversation
+);
 
-app.get("/api/v1/messages", messageController.getMessages);
-app.post("/api/v1/messages", messageController.createMessage);
-app.get("/api/v1/messages/:id", messageController.getMessage);
-app.patch("/api/v1/messages/:id", messageController.updateMessage);
-app.delete("/api/v1/messages/:id", messageController.deleteMessage);
+app.get("/api/v1/messages", verifyToken, messageController.getMessages);
+app.post("/api/v1/messages", verifyToken, messageController.createMessage);
+app.get("/api/v1/messages/:id", verifyToken, messageController.getMessage);
+app.patch("/api/v1/messages/:id", verifyToken, messageController.updateMessage);
+app.delete(
+  "/api/v1/messages/:id",
+  verifyToken,
+  messageController.deleteMessage
+);
 
 io.on("connection", (socket) => {
   console.log(`new socket connection: ${socket.id}`);
@@ -93,10 +144,13 @@ io.on("connection", (socket) => {
   socket.on("login", async (user) => {
     try {
       const userSocket = await createUserSocket(user, socket.id);
-      if (userSocket) {
-        console.log(userSocket);
-      } else {
-        console.log("user socket not created");
+
+      if (process.env.DEBUG == "true") {
+        if (userSocket) {
+          console.log(userSocket);
+        } else {
+          console.log("user socket not created");
+        }
       }
     } catch (err) {
       console.log(err.message);
