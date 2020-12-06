@@ -185,7 +185,6 @@ const userController = {
       )
 
       .then((profileUpdated) => {
-        console.log(profileUpdated);
         if (profileUpdated) {
           res.json({
             success: true,
