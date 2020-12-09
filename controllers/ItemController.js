@@ -79,9 +79,9 @@ const itemControllers = {
         postType: req.body.postType,
         description: req.body.description,
         category: req.body.category,
-        images: req.body.images,
-        delivery: req.body.delivery,
-        status: req.body.status,
+        // images: req.body.images,
+        // delivery: req.body.delivery, //default
+        // status: req.body.status, //default
         tags: req.body.tags,
         postedBy: user.id, //req.body.postedBy
       })
