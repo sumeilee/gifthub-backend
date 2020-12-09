@@ -80,7 +80,7 @@ const itemControllers = {
         description: req.body.description,
         category: req.body.category,
         // images: req.body.images,
-        delivery: req.body.delivery,
+        // delivery: req.body.delivery,
         // status: req.body.status,
         tags: req.body.tags,
         postedBy: user.id, //req.body.postedBy

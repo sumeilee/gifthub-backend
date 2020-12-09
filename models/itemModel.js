@@ -31,6 +31,7 @@ const itemSchema = new mongoose.Schema({
   delivery: {
     type: String,
     enum: ["Included", "Not included"],
+    default: "Included",
     required: true,
   },
   status: {
