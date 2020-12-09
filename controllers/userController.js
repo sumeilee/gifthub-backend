@@ -23,7 +23,7 @@ const userController = {
     }
 
     userModel
-      .findOne({ email: req.body.email })
+      .findOne({email: req.body.email})
 
       .then((user) => {
         if (user) {
@@ -76,7 +76,7 @@ const userController = {
     }
 
     userModel
-      .findOne({ email: req.body.email })
+      .findOne({email: req.body.email})
       .then((result) => {
         if (!result) {
           res.statusCode = 401;
@@ -176,16 +176,32 @@ const userController = {
       });
       return;
     }
+
+    const salt = uuid.v4();
+    let hash;
+    if (req.body.password !== "") {
+      const combination = salt + req.body.password;
+
+      hash = SHA256(combination).toString();
+    }
+    const updateObj = {
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      organisation: req.body.organisation,
+    };
+    if (hash) {
+      updateObj.pwsalt = salt;
+      updateObj.hash = hash;
+    }
+
     userModel
       .updateOne(
         {
           _id: userData.id,
         },
-        req.body
+        updateObj
       )
-
       .then((profileUpdated) => {
-        console.log(profileUpdated);
         if (profileUpdated) {
           res.json({
             success: true,
