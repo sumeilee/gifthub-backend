@@ -31,14 +31,13 @@ const itemSchema = new mongoose.Schema({
   delivery: {
     type: String,
     enum: ["Included", "Not included"],
-    default: "Included",
     required: true,
   },
   status: {
     type: String,
     enum: ["Open", "Pending", "Fulfilled"],
-    default: "Open",
     required: true,
+    default: "Open",
   },
   tags: [String],
   postedBy: {
@@ -50,10 +49,6 @@ const itemSchema = new mongoose.Schema({
     // type: String,
     // required: true,
   },
-  transaction: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Transaction",
-  },
   createdAt: {
     type: Date,
     required: true,
@@ -63,6 +58,10 @@ const itemSchema = new mongoose.Schema({
     type: Date,
     required: true,
     default: Date.now, // check time later
+  },
+  transaction: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Transaction",
   },
 });
 
