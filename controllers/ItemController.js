@@ -79,14 +79,13 @@ const itemControllers = {
         postType: req.body.postType,
         description: req.body.description,
         category: req.body.category,
-        // images: req.body.images,
-        // delivery: req.body.delivery,
-        // status: req.body.status,
+        images: req.body.images,
+        delivery: req.body.delivery,
+        status: req.body.status,
         tags: req.body.tags,
         postedBy: user.id, //req.body.postedBy
       })
       .then((result) => {
-        console.log(result);
         res.json({
           success: true,
           message: "item successfully created",
@@ -129,7 +128,6 @@ const itemControllers = {
           if (formValues[prop]) {
             itemUpdates[prop] = formValues[prop];
             updateNum += 1;
-            console.log(itemUpdates[prop]);
           }
         }
 
@@ -156,7 +154,7 @@ const itemControllers = {
           .populate("postedBy", "first_name last_name")
           .populate("transaction")
           .then((result) => {
-            // console.log(req.body);
+            console.log(req.body);
             console.log(result);
 
             res.json({
@@ -173,6 +171,14 @@ const itemControllers = {
               message: "update item failed",
             });
           });
+      })
+      .catch((err) => {
+        console.log(err);
+        res.statusCode = 500; // to check
+        res.json({
+          success: false,
+          message: "update item failed",
+        });
       });
   },
 
@@ -198,7 +204,7 @@ const itemControllers = {
             _id: req.params.id,
           })
           .then((result) => {
-            // console.log(req.body);
+            console.log(req.body);
             console.log(result);
             res.json({
               success: true,
